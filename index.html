@@ -1,0 +1,701 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Filetoko.com - Sistem Manajemen File & Layanan Toko Digital</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Filetoko">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+</head>
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col">
+
+
+    <div class="flex-grow flex flex-col">
+        <div id="uploadNotificationContainer" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md px-4 pointer-events-none"></div>
+
+                
+        <!-- Navbar Header Responsif & Modern -->
+        <nav class="bg-white shadow-sm px-4 sm:px-8 py-3.5 flex justify-between items-center border-b relative">
+            <div class="flex items-center gap-2 mr-2">
+                <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                    <i class="fa fa-store text-base"></i>
+                </div>
+                <div class="truncate">
+                    <h1 class="text-base sm:text-lg font-bold text-gray-800 truncate leading-tight">
+                        <span id="navStoreName">iqsiau</span>
+                    </h1>
+                    <p class="text-[10px] text-gray-400 font-medium tracking-wide uppercase">Dashboard Toko</p>
+                </div>
+                <!-- Tombol Edit Nama Toko (Roda Gigi) -->
+                <button onclick="openEditStoreModal()" class="text-gray-400 hover:text-blue-600 transition p-1.5 rounded-lg hover:bg-blue-50 shrink-0 ml-1" title="Edit Nama Toko">
+                    <i class="fa fa-cog text-sm"></i>
+                </button>
+                <!-- Tombol Pengaman Ganda (Icon Kunci) -->
+                <button onclick="openPinModal()" class="text-gray-400 hover:text-blue-600 transition p-1.5 rounded-lg hover:bg-blue-50 shrink-0" title="Atur Pengaman Ganda (PIN 6 Angka)">
+                    <i class="fa fa-key text-sm"></i>
+                </button>
+                <!-- Tombol Notifikasi Pesan (Icon Lonceng dengan Pengecekan Pesan Belum Dibaca di PHP) -->
+                                <button onclick="openNotificationModal()" class="text-gray-400 hover:text-blue-600 transition p-1.5 rounded-lg hover:bg-blue-50 shrink-0 relative" title="Pesan dari Filetoko.com">
+                    <i class="fa fa-bell text-sm"></i>
+                    <span id="bellBadge" class="hidden absolute -top-1.5 -right-2 bg-red-600 text-white text-[11px] font-extrabold px-1.5 py-0.5 rounded-full shadow-lg animate-pulse">NEW</span>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+                <div class="hidden md:flex items-center gap-1 lg:gap-2">
+                    <a href="down" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition flex items-center gap-2">
+                        <i class="fa fa-download text-blue-500"></i> Download
+                    </a>
+                    <a href="qr" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition flex items-center gap-2">
+                        <i class="fa fa-qrcode text-indigo-500"></i> QR Code
+                    </a>
+                    <a href="hitungfile" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition flex items-center gap-2">
+                        <i class="fa fa-calculator text-emerald-500"></i> Hitung File
+                    </a>
+                    <a href="komprespdf" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition flex items-center gap-2">
+                        <i class="fa fa-compress-alt text-amber-500"></i> Kompres PDF
+                    </a>
+                    <a href="sizefoto" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition flex items-center gap-2">
+                        <i class="fa fa-crop text-purple-500"></i> SizeFoto
+                    </a>
+                    <a href="invoice" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition flex items-center gap-2">
+                        <i class="fa fa-file-invoice text-blue-500"></i> Nota/Invoice
+                    </a>
+					<a href="undangan" class="px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition flex items-center gap-2">
+					    <i class="fa fa-envelope text-blue-500"></i> Buat Undangan
+					</a>
+                </div>
+
+                <div class="hidden md:block pl-2 border-l border-gray-200">
+                    <a href="index.php?logout=1" class="text-red-500 text-sm font-semibold bg-red-50 px-3.5 py-2 rounded-xl hover:bg-red-100 transition flex items-center gap-1.5">
+                        <i class="fa fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+
+                <div class="relative md:hidden">
+                    <button onclick="toggleMobileMenu()" id="mobileMenuBtn" class="bg-purple-50 text-purple-600 hover:bg-purple-100 p-2.5 rounded-xl transition flex items-center justify-center text-base focus:outline-none" title="Menu Navigasi">
+                        <i class="fa fa-bars text-lg"></i>
+                    </button>
+                    <div id="mobileDropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                        <div class="px-4 py-2 border-b border-gray-100">
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Menu Navigasi</p>
+                        </div>
+                        <a href="down" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium">
+                            <i class="fa fa-download text-blue-500 w-5"></i> Download File
+                        </a>
+                        <a href="qr" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium">
+                            <i class="fa fa-qrcode text-indigo-500 w-5"></i> QR Code Akses
+                        </a>
+                        <a href="hitungfile" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium">
+                            <i class="fa fa-calculator text-emerald-500 w-5"></i> Hitung File PDF
+                        </a>
+                        <a href="komprespdf" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium">
+                            <i class="fa fa-compress-alt text-amber-500 w-5"></i> Kompres PDF
+                        </a>
+                        <a href="sizefoto" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium">
+                            <i class="fa fa-crop text-purple-500 w-5"></i> SizeFoto
+                        </a>
+                        <a href="invoice" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium">
+                            <i class="fa fa-file-invoice text-blue-500 w-5"></i> Nota/Invoice
+                        </a>
+						<a href="undangan" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium">
+                            <i class="fa fa-envelope text-blue-500"></i> Buat Undangan
+                        </a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="index.php?logout=1" class="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 font-semibold">
+                            <i class="fa fa-sign-out-alt w-5"></i> Keluar (Logout)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        
+        <main class="flex-grow p-4 sm:p-8">
+            <div class="bg-white rounded-2xl shadow-sm border p-6 sm:p-8 w-full min-h-[400px]">
+                                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Daftar File Masuk</h2>
+                    </div>
+                                            <div class="text-center py-20 border-2 border-dashed rounded-2xl bg-gray-50 border-gray-200">
+                            <i class="fa fa-folder-open text-5xl text-gray-300 mb-4"></i>
+                            <h3 class="text-xl font-bold text-gray-600">Belum ada file yang masuk</h3>
+                        </div>
+                                                </div>
+        </main>
+    </div>
+
+    <!-- MODAL EDIT NAMA TOKO -->
+    <div id="editStoreModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl relative">
+            <button onclick="closeEditStoreModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            <div class="text-center mb-4">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-blue-50 text-blue-600 rounded-full mb-2">
+                    <i class="fa fa-store text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800">Edit Nama Toko / Usaha</h3>
+            </div>
+            <form id="editStoreForm" onsubmit="submitEditStore(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Nama Usaha Baru</label>
+                    <input type="text" id="inputNewStoreName" value="iqsiau" maxlength="50" required class="w-full border rounded-xl p-3 text-sm font-semibold text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <button type="submit" id="btnSaveStoreName" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow flex items-center justify-center gap-2 text-sm">
+                    Simpan Perubahan
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PENGAMAN GANDA (PIN 6 ANGKA) -->
+    <div id="pinModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl relative">
+            <button onclick="closePinModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            <div class="text-center mb-4">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-blue-50 text-blue-600 rounded-full mb-2">
+                    <i class="fa fa-key text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800">Pengaman Ganda (PIN)</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Atur atau ubah 6 angka PIN pengaman akun Anda.</p>
+            </div>
+            <form id="pinForm" onsubmit="submitPinGanda(event)" class="space-y-3">
+                                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Masukkan PIN Baru (6 Angka)</label>
+                    <input type="password" id="inputPinGanda" placeholder="6 Angka PIN Baru" maxlength="6" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);" class="w-full text-center tracking-[0.5em] text-sm font-bold border rounded-xl p-2.5 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <button type="submit" id="btnSavePin" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow flex items-center justify-center gap-2 text-sm mt-2">
+                    Simpan Perubahan
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL POPUP PESAN ADMIN (LONCENG) -->
+    <div id="notificationModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl relative max-h-[80vh] flex flex-col">
+            <button onclick="closeNotificationModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            <div class="text-center mb-4">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-blue-50 text-blue-600 rounded-full mb-2">
+                    <i class="fa fa-bell text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800">Pesan dari Filetoko.com</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Informasi dan pengumuman khusus untuk toko Anda.</p>
+            </div>
+            <div id="notificationList" class="overflow-y-auto flex-grow space-y-3 pr-1 text-left">
+                <p class="text-center text-gray-400 text-sm py-4">Memuat pesan...</p>
+            </div>
+            <div class="mt-4 pt-3 border-t">
+                <button onclick="closeNotificationModal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition shadow text-sm">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CHECKOUT DOKU -->
+    <div id="dokuModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+            <button onclick="closeDokuModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-blue-100 text-blue-600 rounded-full mb-3">
+                    <i class="fa fa-shield-alt text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800">Langganan Pro</h3>
+                <p class="text-sm text-gray-500 mt-1">Buka kunci seluruh file & hapus batasan unduhan</p>
+            </div>
+            <div class="my-6 bg-gray-50 p-4 rounded-xl border space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Merchant Name</span>
+                    <span class="font-bold text-gray-800">Filetoko.com</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Total Tagihan</span>
+                    <span class="font-bold text-blue-600">Rp 10.000</span>
+                </div>
+            </div>
+            <button onclick="processDokuPayment()" id="btnPayDoku" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow flex items-center justify-center gap-2">
+                <i class="fa fa-external-link-alt"></i> Bayar Sekarang via QRIS
+            </button>
+        </div>
+    </div>
+    
+    <div id="pwaInstallContainer" class="hidden justify-center px-4 mb-2">
+        <button id="pwaInstallBtn" onclick="installPWA()" class="bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold py-3 px-6 rounded-xl shadow-lg transition flex items-center gap-2">
+            <i class="fa fa-download text-base"></i> Install Aplikasi Filetoko.com
+        </button>
+    </div>
+
+    <footer class="text-center p-6 text-gray-500 text-sm mt-auto">
+        &copy; 2026 Filetoko.com. All rights reserved | 
+        <a href="syarat" class="text-blue-600 hover:underline font-medium">Syarat & Ketentuan</a> | 
+        <a href="artikel" class="text-blue-600 hover:underline font-medium">Artikel</a>
+    </footer>
+
+    <script>
+    let notificationInterval = null;
+
+    function toggleMobileMenu() {
+        const dropdown = document.getElementById('mobileDropdown');
+        dropdown.classList.toggle('hidden');
+    }
+
+    window.addEventListener('click', function(e) {
+        const btn = document.getElementById('mobileMenuBtn');
+        const dropdown = document.getElementById('mobileDropdown');
+        if (btn && dropdown && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        const container = document.getElementById('pwaInstallContainer');
+        if (container) {
+            container.classList.remove('hidden');
+            container.classList.add('flex');
+        }
+    });
+
+    function installPWA() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    const container = document.getElementById('pwaInstallContainer');
+                    if (container) container.classList.add('hidden');
+                }
+                deferredPrompt = null;
+            });
+        }
+    }
+
+    setInterval(function() {
+        if (typeof isLoggingOut !== 'undefined' && isLoggingOut) return;
+        fetch('index.php?heartbeat=1').catch(err => {});
+    }, 10000);
+
+    function openEditStoreModal() { document.getElementById('editStoreModal').classList.remove('hidden'); }
+    function closeEditStoreModal() { document.getElementById('editStoreModal').classList.add('hidden'); }
+
+    function submitEditStore(event) {
+        event.preventDefault();
+        const newName = document.getElementById('inputNewStoreName').value.trim();
+        const btn = document.getElementById('btnSaveStoreName');
+        if (!newName) return;
+
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Menyimpan...`;
+
+        const formData = new FormData();
+        formData.append('update_store_name', '1');
+        formData.append('nama_usaha', newName);
+
+        fetch('', { method: 'POST', body: formData })
+        .then(async res => {
+            const text = await res.text();
+            try { return JSON.parse(text); } 
+            catch (e) { alert("Respon Server Bukan JSON:\n\n" + text); throw new Error(); }
+        })
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = `Simpan Perubahan`;
+            if (data.status === 'success') {
+                document.getElementById('navStoreName').innerText = data.new_name;
+                closeEditStoreModal();
+            } else {
+                alert(data.message || "Gagal memperbarui nama usaha.");
+            }
+        })
+        .catch(() => { btn.disabled = false; btn.innerHTML = `Simpan Perubahan`; });
+    }
+
+    function openPinModal() { document.getElementById('pinModal').classList.remove('hidden'); }
+    function closePinModal() { document.getElementById('pinModal').classList.add('hidden'); }
+
+    // Fungsi Pemutar Suara 'Klenting' via File Audio Eksternal
+    function playKlentingSound() {
+        try {
+            const audio = new Audio('klenting.mp3');
+            audio.volume = 0.5;
+            audio.play().catch(e => {
+                console.log("Audio autoplay diblokir browser atau file tidak ditemukan:", e);
+            });
+        } catch (e) {
+            console.log("Audio playback error:", e);
+        }
+    }
+
+    // Fungsi Lonceng & Pesan Admin dengan Hitung Mundur Detik Real-time (Stabil & Tidak Mereset)
+    function openNotificationModal() {
+        document.getElementById('notificationModal').classList.remove('hidden');
+        const badge = document.getElementById('bellBadge');
+        if (badge) badge.classList.add('hidden');
+        
+        const listEl = document.getElementById('notificationList');
+        listEl.innerHTML = `<p class="text-center text-gray-400 text-sm py-4"><i class="fa fa-spinner fa-spin mr-2"></i> Memuat pesan...</p>`;
+
+        if (notificationInterval) clearInterval(notificationInterval);
+
+        fetch('?check_messages=1')
+            .then(async res => {
+                const text = await res.text();
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    throw new Error("Respon server bukan JSON yang valid:\n" + text);
+                }
+            })
+            .then(data => {
+                if (data.status === 'success' && data.messages && data.messages.length > 0) {
+                    let msg = data.messages[0]; // Hanya ambil 1 pesan terbaru
+                    
+                    let expireTime = msg.expire_timestamp ? parseInt(msg.expire_timestamp) * 1000 : (Date.now() + 3600000);
+
+                    function updateTimerDisplay() {
+                        const now = Date.now();
+                        let sisaDetik = Math.floor((expireTime - now) / 1000);
+
+                        if (sisaDetik <= 0) {
+                            listEl.innerHTML = ``;
+                            if (notificationInterval) clearInterval(notificationInterval);
+                            return;
+                        }
+
+                        let m = Math.floor(sisaDetik / 60);
+                        let s = sisaDetik % 60;
+                        let timerString = `Pesan akan dihapus otomatis dalam ${m} menit ${s} detik`;
+
+                        listEl.innerHTML = `
+                            <div class="bg-gray-50 border border-gray-200 p-3.5 rounded-xl">
+                                <p class="text-xs text-gray-400 mb-1"><i class="fa fa-clock mr-1"></i> ${msg.created_at || 'Baru saja'}</p>
+                                <p class="text-sm text-gray-700 font-medium whitespace-pre-line mb-2">${escapeHtml(msg.message || '')}</p>
+                                <p class="text-[11px] text-amber-600 font-semibold italic"><i class="fa fa-hourglass-half mr-1"></i> <span id="timerCountdown">${timerString}</span></p>
+                            </div>
+                        `;
+                    }
+
+                    updateTimerDisplay();
+                    notificationInterval = setInterval(updateTimerDisplay, 1000);
+
+                    // Tandai pesan sudah dibaca agar waktu hitung mundur menetap di server
+                    const formData = new FormData();
+                    formData.append('mark_messages_read', '1');
+                    fetch('', { method: 'POST', body: formData });
+                } else {
+                    listEl.innerHTML = ``;
+                }
+            })
+            .catch(err => {
+                listEl.innerHTML = `<div class="text-center py-6 text-red-500 text-xs bg-red-50 p-3 rounded-xl border border-red-200"><strong>Gagal memuat pesan:</strong><br>${escapeHtml(err.message)}</div>`;
+            });
+    }
+
+    function closeNotificationModal() {
+        document.getElementById('notificationModal').classList.add('hidden');
+        if (notificationInterval) clearInterval(notificationInterval);
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    // Auto check pesan masuk setiap 10 detik. Hanya bunyi & muncul badge NEW jika ada pesan baru
+    setInterval(function() {
+        if (typeof isLoggingOut !== 'undefined' && isLoggingOut) return;
+        fetch('?check_messages=1')
+            .then(res => res.json())
+            .then(data => {
+                const badge = document.getElementById('bellBadge');
+                if (badge) {
+                    if (data.has_new) {
+                        badge.classList.remove('hidden');
+                        playKlentingSound();
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+            }).catch(() => {});
+    }, 10000);
+
+    function submitPinGanda(event) {
+        event.preventDefault();
+        const oldPinEl = document.getElementById('inputOldPin');
+        const oldPinVal = oldPinEl ? oldPinEl.value.trim() : '';
+        const pinVal = document.getElementById('inputPinGanda').value.trim();
+        const btn = document.getElementById('btnSavePin');
+
+        if (pinVal !== "" && pinVal.length !== 6) {
+            alert("PIN baru harus tepat 6 angka!");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Menyimpan...`;
+
+        const formData = new FormData();
+        formData.append('update_pin_ganda', '1');
+        formData.append('old_pin', oldPinVal);
+        formData.append('pin_ganda', pinVal);
+
+        fetch('', { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                window.location.href = 'index.php?logout=1';
+            } else {
+                alert(data.message || "Gagal memperbarui PIN.");
+                btn.disabled = false;
+                btn.innerHTML = `Simpan Perubahan`;
+            }
+        })
+        .catch(() => {
+            alert("Terjadi kesalahan koneksi.");
+            btn.disabled = false;
+            btn.innerHTML = `Simpan Perubahan`;
+        });
+    }
+
+    function openDokuModal() { document.getElementById('dokuModal').classList.remove('hidden'); }
+    function closeDokuModal() { document.getElementById('dokuModal').classList.add('hidden'); }
+
+    function processDokuPayment() {
+        const btn = document.getElementById('btnPayDoku');
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Menghubungkan ke DOKU...`;
+
+        fetch('index.php?pay_doku=1')
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success' && data.checkout_url) {
+                    window.location.href = data.checkout_url;
+                } else {
+                    alert("Gagal membuat pembayaran DOKU.");
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fa fa-external-link-alt"></i> Bayar Sekarang via QRIS`;
+                }
+            })
+            .catch(() => {
+                alert("Terjadi kesalahan koneksi server.");
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa fa-external-link-alt"></i> Bayar Sekarang via QRIS`;
+            });
+    }
+
+    let isLoggingOut = false;
+
+    function deleteFile(fileId, btnElement) {
+        if (isLoggingOut) return;
+        const card = document.getElementById('file-card-' + fileId);
+        if (!card || card.classList.contains('is-deleting')) return;
+        
+        card.classList.add('is-deleting');
+        card.style.opacity = '0.7';
+        card.style.pointerEvents = 'none';
+
+        btnElement.className = "bg-gray-400 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 cursor-not-allowed";
+        btnElement.innerHTML = `<i class="fa fa-spinner fa-spin"></i>`;
+
+        const downloadContainer = card.querySelector('.download-btn-container');
+        if (downloadContainer) {
+            downloadContainer.className = "flex-grow text-center bg-amber-500 text-white px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 cursor-not-allowed";
+            downloadContainer.removeAttribute('href');
+            downloadContainer.removeAttribute('download');
+            downloadContainer.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Sedang di Hapus..`;
+        }
+
+        fetch('index.php?ajax_delete=' + fileId)
+            .then(response => response.json())
+            .then(data => {
+                if (isLoggingOut) return;
+                if (data.status === 'success') {
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.transform = 'scale(0.9)';
+                    card.style.opacity = '0';
+                    setTimeout(() => {
+                        if (isLoggingOut) return;
+                        card.remove();
+                        if (document.querySelectorAll('.file-card').length === 0) {
+                            window.location.reload();
+                        }
+                    }, 300);
+                } else {
+                    window.location.reload();
+                }
+            })
+            .catch(() => {
+                if (!isLoggingOut) window.location.reload();
+            });
+    }
+
+    setInterval(function() {
+        if (isLoggingOut) return;
+        const now = new Date().getTime(); 
+        
+        document.querySelectorAll('.countdown').forEach(function(el) {
+            const expiresTime = parseInt(el.getAttribute('data-expires'));
+            const card = el.closest('.file-card');
+            
+            let sisa = Math.floor((expiresTime - now) / 1000);
+            
+            if (sisa > 0) {
+                let m = Math.floor(sisa / 60); 
+                let s = sisa % 60;
+                el.innerText = m + "m " + s + "d";
+            } else {
+                if (card && !card.classList.contains('is-deleting')) {
+                    card.classList.add('is-deleting');
+                    const fileId = card.getAttribute('data-file-id');
+                    const deleteBtn = card.querySelector('.delete-btn');
+                    
+                    el.innerText = "Expired (Menghapus...)";
+                    card.style.opacity = '0.5';
+                    card.style.pointerEvents = 'none';
+
+                    if (deleteBtn) {
+                        deleteBtn.className = "bg-gray-400 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 cursor-not-allowed";
+                        deleteBtn.innerHTML = `<i class="fa fa-spinner fa-spin"></i>`;
+                    }
+
+                    const downloadContainer = card.querySelector('.download-btn-container');
+                    if (downloadContainer) {
+                        downloadContainer.className = "flex-grow text-center bg-amber-500 text-white px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 cursor-not-allowed";
+                        downloadContainer.removeAttribute('href');
+                        downloadContainer.removeAttribute('download');
+                        downloadContainer.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Sedang di Hapus..`;
+                    }
+
+                    fetch('index.php?ajax_delete=' + fileId)
+                        .then(response => response.json())
+                        .then(() => {
+                            if (isLoggingOut) return;
+                            card.style.transition = 'all 0.3s ease';
+                            card.style.transform = 'scale(0.9)';
+                            card.style.opacity = '0';
+                            setTimeout(() => {
+                                if (isLoggingOut) return;
+                                card.remove();
+                                if (document.querySelectorAll('.file-card').length === 0) {
+                                    window.location.reload();
+                                }
+                            }, 300);
+                        })
+                        .catch(() => {});
+                }
+            }
+        });
+    }, 1000);
+
+    let lastMaxId = 0;
+    let lastTotal = -1;
+    let isInitialCheck = true;
+
+    setInterval(function() {
+        if (isLoggingOut) return;
+        fetch('index.php?check_files=1')
+            .then(response => response.json())
+            .then(data => {
+                if (isLoggingOut) return;
+                if (isInitialCheck) {
+                    lastTotal = data.total;
+                    lastMaxId = data.max_id;
+                    isInitialCheck = false;
+                    return;
+                }
+
+                if (data.total !== lastTotal || data.max_id !== lastMaxId) {
+                    if (data.total > lastTotal || data.max_id > lastMaxId) {
+                        showUploadNotification();
+                    }
+
+                    lastTotal = data.total;
+                    lastMaxId = data.max_id;
+                    
+                    const currentContent = document.querySelector('main .bg-white');
+                    if (currentContent && (!document.URL.includes('menu=qr')) && document.querySelectorAll('.is-deleting').length === 0) {
+                        fetch(window.location.href)
+                            .then(res => res.text())
+                            .then(html => {
+                                if (isLoggingOut) return;
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(html, 'text/html');
+                                const newContent = doc.querySelector('main .bg-white');
+                                if (newContent && currentContent) {
+                                    currentContent.innerHTML = newContent.innerHTML;
+                                }
+                            });
+                    }
+                }
+            }).catch(() => {});
+    }, 1500);
+
+    function showUploadNotification() {
+        if (isLoggingOut) return;
+        let container = document.getElementById('uploadNotificationContainer');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'uploadNotificationContainer';
+            container.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md px-4 pointer-events-none';
+            document.body.prepend(container);
+        }
+
+        const alertBox = document.createElement('div');
+        alertBox.className = "pointer-events-auto bg-blue-600 text-white px-5 py-3 rounded-xl shadow-xl flex items-center justify-between mb-2 transform -translate-y-4 opacity-0 transition-all duration-300 ease-out";
+        alertBox.innerHTML = `
+            <div class="flex items-center gap-3">
+                <i class="fa fa-bell text-xl animate-bounce"></i>
+                <a href="down" class="font-bold text-sm hover:underline">Ada file baru masuk di menu Download</a>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-blue-200 hover:text-white ml-4 font-bold text-lg">×</button>
+        `;
+
+        container.appendChild(alertBox);
+
+        setTimeout(() => {
+            if (!isLoggingOut) alertBox.classList.remove('-translate-y-4', 'opacity-0');
+        }, 10);
+
+        setTimeout(() => {
+            if (!isLoggingOut) {
+                alertBox.classList.add('opacity-0', '-translate-y-4');
+                setTimeout(() => alertBox.remove(), 300);
+            }
+        }, 5000);
+    }
+    
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+
+    async function downloadQR(namaToko) {
+        const image = document.getElementById('qrImage');
+        const response = await fetch(image.src);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'QR_' + namaToko.replace(/\s+/g, '_') + '.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+    }
+    </script>
+</body>
+</html>
